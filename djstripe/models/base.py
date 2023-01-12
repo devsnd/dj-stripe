@@ -453,6 +453,11 @@ class StripeModel(StripeBaseModel):
 
             id_ = get_id_from_stripe_data(raw_field_data)
 
+            if cls.__name__ == 'Charge' and id_ and id_.startswith('fee_'):
+                # skip application fees that are children of Charges as their
+                # respective charges belong to other accounts, breaking the sync
+                skip = True
+
             if id_ == raw_field_data:
                 # A field like {"subscription": "sub_6lsC8pt7IcFpjA", ...}
                 refetch = True
