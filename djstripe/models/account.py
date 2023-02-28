@@ -148,8 +148,8 @@ class Account(StripeModel):
         settings = self.settings or {}
         business_profile = self.business_profile or {}
         return (
-            settings.get("dashboard", {}).get("display_name")
-            or business_profile.get("name")
+            business_profile.get("name")
+            or settings.get("dashboard", {}).get("display_name")
             or super().__str__()
         )
 
