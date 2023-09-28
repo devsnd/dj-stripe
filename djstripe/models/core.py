@@ -110,7 +110,7 @@ class BalanceTransaction(StripeModel):
         try:
             return apps.get_model("djstripe", self.type)
         except LookupError:
-            raise
+            return
 
     def get_source_instance(self):
         return self.get_source_class().objects.get(id=self.source)
