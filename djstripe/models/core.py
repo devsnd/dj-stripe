@@ -90,6 +90,16 @@ class BalanceTransaction(StripeModel):
     )
     status = StripeEnumField(enum=enums.BalanceTransactionStatus)
     type = StripeEnumField(enum=enums.BalanceTransactionType)
+    included_in_payout = StripeForeignKey(
+        "Payout",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="included_balance_transactions",
+        help_text=(
+            "The payout object to which this Balance Transaction is related"
+        ),
+    )
 
     def __str__(self):
         amount = get_friendly_currency_amount(self.amount / 100, self.currency)
