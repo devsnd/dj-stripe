@@ -62,7 +62,6 @@ class TestTransferStr:
         transfer__attach_object_post_save_hook_mock,
         fake_transfer_data,
     ):
-
         transfer_retrieve_mock.return_value = fake_transfer_data
         transfer = Transfer.sync_from_stripe_data(fake_transfer_data)
 
@@ -98,7 +97,6 @@ class TestTransfer(AssertStripeFksMixin, TestCase):
         account_retrieve_mock,
         transfer__attach_object_post_save_hook_mock,
     ):
-
         transfer = Transfer.sync_from_stripe_data(deepcopy(FAKE_TRANSFER))
 
         balance_transaction_retrieve_mock.assert_not_called()
@@ -111,7 +109,10 @@ class TestTransfer(AssertStripeFksMixin, TestCase):
         # assert transfer.destination.id == FAKE_TRANSFER["destination"]
         assert transfer.destination == FAKE_TRANSFER["destination"]
 
-        self.assert_fks(transfer, expected_blank_fks="")
+        self.assert_fks(
+            transfer,
+            expected_blank_fks={"djstripe.BalanceTransaction.included_in_payout"},
+        )
 
     @patch.object(Transfer, "_attach_objects_post_save_hook")
     @patch(
@@ -134,7 +135,6 @@ class TestTransfer(AssertStripeFksMixin, TestCase):
         account_retrieve_mock,
         transfer__attach_object_post_save_hook_mock,
     ):
-
         transfer = Transfer.sync_from_stripe_data(deepcopy(FAKE_TRANSFER))
         assert transfer.fee == FAKE_BALANCE_TRANSACTION_II["fee"]
         assert transfer.fee == transfer.balance_transaction.fee
@@ -160,7 +160,6 @@ class TestTransfer(AssertStripeFksMixin, TestCase):
         account_retrieve_mock,
         transfer__attach_object_post_save_hook_mock,
     ):
-
         transfer = Transfer.sync_from_stripe_data(deepcopy(FAKE_TRANSFER))
 
         assert transfer.get_stripe_dashboard_url() == (

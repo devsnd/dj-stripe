@@ -85,6 +85,14 @@ class DjstripeSettings:
         )
 
     @property
+    def WEBHOOK_RATE_LIMIT_RETRY_ATTEMPTS(self):
+        return getattr(settings, "WEBHOOK_RATE_LIMIT_RETRY_ATTEMPTS", 3)
+
+    @property
+    def WEBHOOK_RATE_LIMIT_RETRY_WAIT_TIME(self):
+        return getattr(settings, "DJSTRIPE_WEBHOOK_RATE_LIMIT_RETRY_WAIT_TIME", 2)
+
+    @property
     def WEBHOOK_VALIDATION(self):
         return getattr(settings, "DJSTRIPE_WEBHOOK_VALIDATION", "verify_signature")
 

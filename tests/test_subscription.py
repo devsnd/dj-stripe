@@ -168,6 +168,7 @@ class SubscriptionTest(AssertStripeFksMixin, TestCase):
         self.customer = FAKE_CUSTOMER.create_for_user(self.user)
 
         self.default_expected_blank_fks = {
+            "djstripe.BalanceTransaction.included_in_payout",
             "djstripe.Customer.coupon",
             "djstripe.Customer.default_payment_method",
             "djstripe.Charge.application_fee",
@@ -267,7 +268,6 @@ class SubscriptionTest(AssertStripeFksMixin, TestCase):
         product_retrieve_mock,
         plan_retrieve_mock,
     ):
-
         subscription_fake = deepcopy(FAKE_SUBSCRIPTION_II)
         subscription_fake["latest_invoice"] = FAKE_INVOICE["id"]
         subscription_retrieve_mock.return_value = subscription_fake
@@ -915,7 +915,6 @@ class SubscriptionTest(AssertStripeFksMixin, TestCase):
         product_retrieve_mock,
         plan_retrieve_mock,
     ):
-
         subscription_fake = deepcopy(FAKE_SUBSCRIPTION_MULTI_PLAN)
         subscription_fake["latest_invoice"] = FAKE_INVOICE["id"]
         subscription_retrieve_mock.return_value = subscription_fake

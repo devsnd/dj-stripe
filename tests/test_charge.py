@@ -46,6 +46,7 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         self.customer = FAKE_CUSTOMER.create_for_user(user)
 
         self.default_expected_blank_fks = {
+            "djstripe.BalanceTransaction.included_in_payout",
             "djstripe.Charge.application_fee",
             "djstripe.Charge.dispute",
             "djstripe.Charge.latest_upcominginvoice (related name)",
@@ -196,7 +197,6 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
         default_account_mock,
     ):
-
         default_account_mock.return_value = self.account
 
         fake_charge_copy = deepcopy(FAKE_CHARGE)
@@ -228,7 +228,11 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         self.assert_fks(
             charge,
             expected_blank_fks=self.default_expected_blank_fks
-            | {"djstripe.Account.branding_logo", "djstripe.Account.branding_icon"},
+            | {
+                "djstripe.Account.branding_logo",
+                "djstripe.Account.branding_icon",
+                "djstripe.BalanceTransaction.included_in_payout",
+            },
         )
 
     @patch(
@@ -381,7 +385,6 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
         default_account_mock,
     ):
-
         default_account_mock.return_value = self.account
         fake_charge_copy = deepcopy(FAKE_CHARGE_REFUNDED)
 
@@ -543,7 +546,6 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
         default_account_mock,
     ):
-
         default_account_mock.return_value = self.account
 
         fake_charge_copy = deepcopy(FAKE_CHARGE)
@@ -593,7 +595,6 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
         default_account_mock,
     ):
-
         default_account_mock.return_value = self.account
 
         fake_charge_copy = deepcopy(FAKE_CHARGE)
@@ -680,7 +681,6 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
         transfer__attach_object_post_save_hook_mock,
     ):
-
         default_account_mock.return_value = self.account
 
         fake_transfer = deepcopy(FAKE_TRANSFER)
@@ -761,7 +761,6 @@ class ChargeTest(AssertStripeFksMixin, TestCase):
         account_retrieve_mock,
         charge_retrieve_mock,
     ):
-
         account_retrieve_mock.return_value = FAKE_STANDARD_ACCOUNT
 
         fake_charge_copy = deepcopy(FAKE_CHARGE)

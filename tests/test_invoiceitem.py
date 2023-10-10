@@ -45,6 +45,7 @@ class InvoiceItemTest(AssertStripeFksMixin, TestCase):
         self.default_expected_blank_fks = {
             "djstripe.Account.branding_logo",
             "djstripe.Account.branding_icon",
+            "djstripe.BalanceTransaction.included_in_payout",
             "djstripe.Charge.application_fee",
             "djstripe.Charge.dispute",
             "djstripe.Charge.latest_upcominginvoice (related name)",
@@ -124,7 +125,6 @@ class InvoiceItemTest(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
         default_account_mock,
     ):
-
         fake_subscription = deepcopy(FAKE_SUBSCRIPTION_III)
         fake_subscription["latest_invoice"] = FAKE_INVOICE["id"]
         subscription_retrieve_mock.side_effect = [

@@ -49,6 +49,7 @@ class InvoiceTest(AssertStripeFksMixin, TestCase):
         self.default_expected_blank_fks = {
             "djstripe.Account.branding_logo",
             "djstripe.Account.branding_icon",
+            "djstripe.BalanceTransaction.included_in_payout",
             "djstripe.Charge.application_fee",
             "djstripe.Charge.dispute",
             "djstripe.Charge.latest_upcominginvoice (related name)",

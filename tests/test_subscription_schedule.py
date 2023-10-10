@@ -72,6 +72,7 @@ class SubscriptionScheduleTest(AssertStripeFksMixin, TestCase):
         self.customer = FAKE_CUSTOMER.create_for_user(self.user)
 
         self.default_expected_blank_fks = {
+            "djstripe.BalanceTransaction.included_in_payout",
             "djstripe.Customer.coupon",
             "djstripe.Customer.default_payment_method",
             "djstripe.Charge.application_fee",

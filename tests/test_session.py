@@ -68,12 +68,12 @@ class SessionTest(AssertStripeFksMixin, TestCase):
         subscription_retrieve_mock,
         balance_transaction_retrieve_mock,
     ):
-
         session = Session.sync_from_stripe_data(deepcopy(FAKE_SESSION_I))
 
         self.assert_fks(
             session,
             expected_blank_fks={
+                "djstripe.BalanceTransaction.included_in_payout",
                 "djstripe.Charge.latest_upcominginvoice (related name)",
                 "djstripe.Charge.application_fee",
                 "djstripe.Charge.dispute",
@@ -137,14 +137,12 @@ class SessionTest(AssertStripeFksMixin, TestCase):
         subscription_retrieve_mock,
         balance_transaction_retrieve_mock,
     ):
-
         session = Session.sync_from_stripe_data(deepcopy(FAKE_SESSION_I))
 
         self.assertEqual(f"<id={FAKE_SESSION_I['id']}>", str(session))
 
 
 class TestSession:
-
     key = djstripe_settings.SUBSCRIBER_CUSTOMER_KEY
 
     @pytest.mark.parametrize(

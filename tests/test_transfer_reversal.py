@@ -93,7 +93,7 @@ class TestTransfer(AssertStripeFksMixin, TestCase):
             == FAKE_TRANSFER_WITH_1_REVERSAL["reversals"]["data"][0]["transfer"]["id"]
         )
 
-        self.assert_fks(transfer_reversal, expected_blank_fks="")
+        self.assert_fks(transfer_reversal, expected_blank_fks=["djstripe.BalanceTransaction.included_in_payout"])
 
     @patch.object(Transfer, "_attach_objects_post_save_hook")
     @patch(

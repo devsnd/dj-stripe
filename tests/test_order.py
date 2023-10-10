@@ -76,6 +76,7 @@ class TestOrder(AssertStripeFksMixin, TestCase):
         balance_transaction_retrieve_mock,
     ):
         default_expected_blank_fks = {
+            "djstripe.BalanceTransaction.included_in_payout",
             "djstripe.Customer.coupon",
             "djstripe.Customer.default_payment_method",
             "djstripe.Customer.subscriber",
@@ -254,7 +255,6 @@ class TestOrderStr:
             OrderStatus.complete,
             OrderStatus.processing,
         ):
-
             assert str(order) == f"Placed on 07/10/2019 ({order_status})"
 
 

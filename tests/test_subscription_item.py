@@ -167,7 +167,6 @@ class SubscriptionItemTest(AssertStripeFksMixin, TestCase):
         plan_retrieve_mock,
         price_retrieve_mock,
     ):
-
         fake_subscription = deepcopy(FAKE_SUBSCRIPTION_II)
         fake_subscription["latest_invoice"] = FAKE_INVOICE["id"]
         subscription_retrieve_mock.return_value = fake_subscription
@@ -194,6 +193,7 @@ class SubscriptionItemTest(AssertStripeFksMixin, TestCase):
             expected_blank_fks=(
                 self.default_expected_blank_fks
                 | {
+                    "djstripe.BalanceTransaction.included_in_payout",
                     "djstripe.Charge.latest_upcominginvoice (related name)",
                     "djstripe.Charge.application_fee",
                     "djstripe.Charge.dispute",
@@ -244,7 +244,6 @@ class SubscriptionItemTest(AssertStripeFksMixin, TestCase):
         plan_retrieve_mock,
         price_retrieve_mock,
     ):
-
         fake_subscription = deepcopy(FAKE_SUBSCRIPTION_MULTI_PLAN)
         fake_subscription["latest_invoice"] = FAKE_INVOICE["id"]
         subscription_retrieve_mock.return_value = fake_subscription

@@ -294,6 +294,7 @@ FAKE_BALANCE_TRANSACTION_II = {
     },
     "status": "pending",
     "type": "charge",
+    "included_in_payout": None,
 }
 
 FAKE_BALANCE_TRANSACTION_III = {
@@ -325,6 +326,7 @@ FAKE_BALANCE_TRANSACTION_III = {
     },
     "status": "pending",
     "type": "charge",
+    "included_in_payout": None,
 }
 
 FAKE_BALANCE_TRANSACTION_IV = {
@@ -356,6 +358,7 @@ FAKE_BALANCE_TRANSACTION_IV = {
     },
     "status": "pending",
     "type": "charge",
+    "included_in_payout": None,
 }
 
 
