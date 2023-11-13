@@ -96,9 +96,7 @@ class BalanceTransaction(StripeModel):
         null=True,
         blank=True,
         related_name="included_balance_transactions",
-        help_text=(
-            "The payout object to which this Balance Transaction is related"
-        ),
+        help_text=("The payout object to which this Balance Transaction is related"),
     )
 
     def __str__(self):
@@ -635,7 +633,7 @@ class Customer(StripeModel):
     """
 
     stripe_class = stripe.Customer
-    expand_fields = ["default_source", "sources"]
+    expand_fields = ["default_source", "sources", "cash_balance"]
     stripe_dashboard_item_name = "customers"
 
     address = JSONField(null=True, blank=True, help_text="The customer's address.")
@@ -654,6 +652,7 @@ class Customer(StripeModel):
             "recurring billing purposes (i.e., subscriptions, invoices, invoice items)."
         ),
     )
+    cash_balance = JSONField(null=True, blank=True, help_text="Cash balance object")
     currency = StripeCurrencyCodeField(
         blank=True,
         default="",
@@ -775,7 +774,6 @@ class Customer(StripeModel):
 
     @classmethod
     def _manipulate_stripe_object_hook(cls, data):
-
         # stripe adds a deleted attribute if the Customer has been deleted upstream
         if data.get("deleted"):
             logger.warning(
@@ -1481,7 +1479,6 @@ class Dispute(StripeModel):
         pending_relations=None,
         api_key=djstripe_settings.STRIPE_SECRET_KEY,
     ):
-
         super()._attach_objects_post_save_hook(
             cls, data, pending_relations=pending_relations, api_key=api_key
         )
