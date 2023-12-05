@@ -765,6 +765,9 @@ class Customer(StripeModel):
 
     class Meta(StripeModel.Meta):
         unique_together = ("subscriber", "livemode", "djstripe_owner_account")
+        indexes = [
+            models.Index(models.F("metadata__userUid"), name="metadata__userUid_idx"),
+        ]
 
     def __str__(self):
         if self.subscriber:
