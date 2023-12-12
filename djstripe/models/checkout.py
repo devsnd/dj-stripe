@@ -82,6 +82,7 @@ class Session(StripeModel):
         help_text=("PaymentIntent created if SKUs or line items were provided."),
     )
     payment_method_types = JSONField(
+        db_index=True,
         help_text="The list of payment method types (e.g. card) that this "
         "Checkout Session is allowed to accept."
     )

@@ -699,7 +699,7 @@ class Customer(StripeModel):
         "the date that the discount will end.",
     )
     # </discount>
-    email = models.TextField(max_length=5000, default="", blank=True)
+    email = models.TextField(max_length=5000, default="", blank=True, db_index=True)
     invoice_prefix = models.CharField(
         default="",
         blank=True,
