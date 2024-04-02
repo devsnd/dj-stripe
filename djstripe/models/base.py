@@ -638,6 +638,15 @@ class StripeModel(StripeBaseModel):
         except cls.DoesNotExist:
             # try to create iff instance doesn't already exist in the DB
             # TODO dictionary unpacking will not work if cls has any ManyToManyField
+            # HACK: unpack transfer inside charge object
+            if cls.__name__ == 'Transfer':
+                # The transfer can contain source_transaction, which is can be a complete charge object, even though
+                # the field is only an id. We need to unpack it here (ideally we also need to persist the charge in there)
+                # there might be a better place to do this in djstripe, but I could not find anything.
+                if not isinstance(stripe_data['source_transaction'], str):
+                    source_transaction_data = dict(**stripe_data['source_transaction'])
+                    stripe_data['source_transaction'] = stripe_data['source_transaction']['id']
+            # HACK: end
             instance = cls(**stripe_data)
 
             instance._attach_objects_hook(
