@@ -354,12 +354,17 @@ class StripeModel(StripeBaseModel):
 
             # will work for Forward FK and OneToOneField relations and reverse OneToOneField relations
             if isinstance(field, (models.ForeignKey, models.OneToOneRel)):
+                # if the field is part of the source account, use the source account id
+                if field.name.startswith("source_") and data.source:
+                    account = data.source.id
+                else:
+                    account = stripe_account
                 field_data, skip, is_nulled = cls._stripe_object_field_to_foreign_key(
                     field=field,
                     manipulated_data=manipulated_data,
                     current_ids=current_ids,
                     pending_relations=pending_relations,
-                    stripe_account=stripe_account,
+                    stripe_account=account,
                     api_key=api_key,
                 )
 
@@ -436,7 +441,6 @@ class StripeModel(StripeBaseModel):
         if issubclass(field.related_model, StripeModel) or issubclass(
             field.related_model, DjstripePaymentMethod
         ):
-
             if field_name in manipulated_data:
                 raw_field_data = manipulated_data.get(field_name)
 
@@ -453,7 +457,7 @@ class StripeModel(StripeBaseModel):
 
             id_ = get_id_from_stripe_data(raw_field_data)
 
-            if cls.__name__ == 'Charge' and id_ and id_.startswith('fee_'):
+            if cls.__name__ == "Charge" and id_ and id_.startswith("fee_"):
                 # skip application fees that are children of Charges as their
                 # respective charges belong to other accounts, breaking the sync
                 skip = True
