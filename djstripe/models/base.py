@@ -355,8 +355,14 @@ class StripeModel(StripeBaseModel):
             # will work for Forward FK and OneToOneField relations and reverse OneToOneField relations
             if isinstance(field, (models.ForeignKey, models.OneToOneRel)):
                 # if the field is part of the source account, use the source account id
-                if field.name.startswith("source_") and data.source:
+                if field.name.startswith('source_') and data.source:
                     account = data.source.id
+                elif field.name == 'balance_transaction' and data.OBJECT_NAME == 'application_fee':
+                    # application fees' balance transaction belong to the main account, not the connected account
+                    account = data.fee_source.stripe_account
+                elif field.name == 'balance_transaction' and data.OBJECT_NAME == 'refund':
+                    # refunds' balance transaction belong to the connected account of the refund
+                    account = data.stripe_account
                 else:
                     account = stripe_account
                 field_data, skip, is_nulled = cls._stripe_object_field_to_foreign_key(
