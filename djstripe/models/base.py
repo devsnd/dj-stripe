@@ -278,8 +278,15 @@ class StripeModel(StripeBaseModel):
                     return Account._get_or_retrieve(
                         id=stripe_account_id, api_key=api_key
                     )
-
             else:
+                try:
+                    if data.get("source", {}).get("object") == "account":
+                        return Account._get_or_retrieve(
+                            id=data["source"]["id"], api_key=api_key
+                        )
+                except AttributeError:
+                    pass
+
                 stripe_account = getattr(data, "stripe_account", None)
                 stripe_account_id = get_id_from_stripe_data(stripe_account)
                 if stripe_account_id:
@@ -354,18 +361,22 @@ class StripeModel(StripeBaseModel):
 
             # will work for Forward FK and OneToOneField relations and reverse OneToOneField relations
             if isinstance(field, (models.ForeignKey, models.OneToOneRel)):
+                # we need to find out if the referenced object belongs to a connected account before trying to fetch it
+                object_name = data.get("object")
                 # if the field is part of the source account, use the source account id
-                if field.name.startswith('source_') and getattr(data, 'source', None):
-                    account = data.source.id
-                elif field.name == 'balance_transaction' and data.OBJECT_NAME == 'application_fee':
+                if field.name.startswith("source_") and getattr(data, "source", None):
+                    account = data.get("source", {}).get("id")
+                elif field.name == "balance_transaction" and object_name == "application_fee":
                     # application fees' balance transaction belong to the main account, not the connected account
                     account = data.fee_source.stripe_account
-                elif field.name == 'balance_transaction' and data.OBJECT_NAME == 'refund':
+                elif field.name == "balance_transaction" and object_name == "refund":
                     # refunds' balance transaction belong to the connected account of the refund
                     account = data.stripe_account
-                elif data.OBJECT_NAME == 'charge' and getattr(data, 'transfer_data', None):
-                    account = None  # charges' with transfer_data belong to the main account (and their child objects too)
+                elif object_name == "charge" and getattr(data, "transfer_data", None):
+                    # charges' with transfer_data belong to the main account (and their child objects too)
+                    account = None
                 else:
+                    # if none of the above apply, the object belongs to the connected account of the current object
                     account = stripe_account
                 field_data, skip, is_nulled = cls._stripe_object_field_to_foreign_key(
                     field=field,
@@ -641,13 +652,15 @@ class StripeModel(StripeBaseModel):
             # try to create iff instance doesn't already exist in the DB
             # TODO dictionary unpacking will not work if cls has any ManyToManyField
             # HACK: unpack transfer inside charge object
-            if cls.__name__ == 'Transfer':
+            if cls.__name__ == "Transfer":
                 # The transfer can contain source_transaction, which is can be a complete charge object, even though
                 # the field is only an id. We need to unpack it here (ideally we also need to persist the charge in there)
                 # there might be a better place to do this in djstripe, but I could not find anything.
-                if not isinstance(stripe_data['source_transaction'], str):
-                    source_transaction_data = dict(**stripe_data['source_transaction'])
-                    stripe_data['source_transaction'] = stripe_data['source_transaction']['id']
+                if not isinstance(stripe_data["source_transaction"], str):
+                    source_transaction_data = dict(**stripe_data["source_transaction"])
+                    stripe_data["source_transaction"] = stripe_data[
+                        "source_transaction"
+                    ]["id"]
             # HACK: end
             instance = cls(**stripe_data)
 

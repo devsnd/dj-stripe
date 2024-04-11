@@ -686,6 +686,12 @@ class ChargeDict(StripeItem):
         return self
 
 
+class TransferDict(StripeItem):
+    def __init__(self, *args, **kwargs):
+        """Match Stripe's behavior: return a stripe iterable on `charge.refunds`."""
+        super().__init__(*args, **kwargs)
+        self.reversals = StripeList(self.reversals)
+
 FAKE_CHARGE = ChargeDict(load_fixture("charge_ch_fakefakefakefakefake0001.json"))
 
 
@@ -2535,3 +2541,5 @@ FAKE_EVENT_SUBSCRIPTION_SCHEDULE_ABORTED["data"]["previous_attributes"] = {
     "released_at": None,
     "status": "not_started",
 }
+
+FAKE_CHARGE_WITH_CONNECTED_ACCOUNT = ChargeDict(load_fixture("charge_with_connected_account.json"))
