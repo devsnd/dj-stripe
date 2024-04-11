@@ -22,6 +22,7 @@ from djstripe.webhooks import TEST_EVENT_ID
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.settings")
 logger = logging.getLogger(__name__)
+from stripe.util import convert_to_stripe_object
 
 FUTURE_DATE = datetime(2100, 4, 30, tzinfo=timezone.utc)
 
@@ -2542,4 +2543,4 @@ FAKE_EVENT_SUBSCRIPTION_SCHEDULE_ABORTED["data"]["previous_attributes"] = {
     "status": "not_started",
 }
 
-FAKE_CHARGE_WITH_CONNECTED_ACCOUNT = ChargeDict(load_fixture("charge_with_connected_account.json"))
+FAKE_CHARGE_WITH_CONNECTED_ACCOUNT = convert_to_stripe_object(load_fixture("charge_with_connected_account.json"))

@@ -231,6 +231,7 @@ def account_updated_webhook_handler(event):
 
 
 @webhooks.handler("charge")
+@webhooks.handler("payment")
 def charge_webhook_handler(event):
     """Handle updates to Charge objects
     - charge: https://stripe.com/docs/api/charges

@@ -282,7 +282,7 @@ class StripeModel(StripeBaseModel):
                 try:
                     if data.get("source", {}).get("object") == "account":
                         return Account._get_or_retrieve(
-                            id=data["source"]["id"], api_key=api_key
+                            id=data["source"].stripe_account, api_key=api_key
                         )
                 except AttributeError:
                     pass
