@@ -241,6 +241,44 @@ class TestWebhookEventTrigger(TestCase):
         event_retrieve_mock.assert_not_called()
         verify_header_mock.assert_not_called()
 
+    @patch.object(
+        WebhookEventTrigger.validate, "__defaults__", (None, "whsec_XXXXX", 300, None)
+    )
+    @patch.object(Transfer, "_attach_objects_post_save_hook")
+    @patch("stripe.WebhookSignature.verify_header", autospec=True)
+    @patch(
+        "stripe.Account.retrieve",
+        return_value=deepcopy(FAKE_STANDARD_ACCOUNT),
+        autospec=True,
+    )
+    @patch(
+        "stripe.Transfer.retrieve", return_value=deepcopy(FAKE_TRANSFER), autospec=True
+    )
+    @patch(
+        "stripe.Event.retrieve",
+        return_value=deepcopy(FAKE_EVENT_TRANSFER_CREATED),
+        autospec=True,
+    )
+    def test_webhook_wrong_livemode_setting_is_not_processed(
+        self,
+        event_retrieve_mock,
+        transfer_retrieve_mock,
+        account_retrieve_mock,
+        verify_header_mock,
+        transfer__attach_object_post_save_hook_mock,
+    ):
+        invalid_event = deepcopy(FAKE_EVENT_TRANSFER_CREATED)
+        invalid_event["livemode"] = True
+
+        with pytest.warns(None, match=r"Skipping processing of event with livemode (True) does not match DJSTRIPE_LIVE_MODE (False)"):
+            resp = self._send_event(invalid_event)
+
+        self.assertEqual(resp.status_code, 200)
+        event_trigger = WebhookEventTrigger.objects.first()
+        assert event_trigger.valid
+        assert not event_trigger.processed
+
+
     def test_webhook_no_signature(self):
         self.assertEqual(WebhookEventTrigger.objects.count(), 0)
         resp = Client().post(

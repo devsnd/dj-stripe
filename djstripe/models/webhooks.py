@@ -328,6 +328,17 @@ class WebhookEventTrigger(models.Model):
         self.exception = ""
         self.traceback = ""
 
+        # the stripe connected account webhook has a bug where it also delivers events for the dev environment,
+        # so prevent processing of events of another environment
+        livemode = self.json_body["livemode"]
+        if djstripe_settings.STRIPE_LIVE_MODE != livemode:
+            logger.warning(
+                "Skipping processing of event with livemode (%r) does not match DJSTRIPE_LIVE_MODE (%r)",
+                livemode,
+                djstripe_settings.STRIPE_LIVE_MODE,
+            )
+            return self.event
+
         self.event = Event.process(self.json_body, api_key=api_key)
         self.processed = True
         if save:
