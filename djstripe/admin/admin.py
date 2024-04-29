@@ -64,6 +64,7 @@ class WebhookEventTriggerAdmin(ReadOnlyMixin, admin.ModelAdmin):
     list_filter = ("created", "valid", "processed")
     list_select_related = ("event",)
     raw_id_fields = get_forward_relation_fields_for_model(models.WebhookEventTrigger)
+    actions = ['reprocess']
 
     def reprocess(self, request, queryset):
         for trigger in queryset:
