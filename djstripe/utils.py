@@ -44,7 +44,7 @@ def convert_tstamp(response) -> Optional[datetime.datetime]:
         return response
 
     # Overrides the set timezone to UTC - I think...
-    tz = timezone.utc if settings.USE_TZ else None
+    tz = timezone.get_fixed_timezone(0) if settings.USE_TZ else None
 
     return datetime.datetime.fromtimestamp(response, tz)
 

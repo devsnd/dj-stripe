@@ -23,7 +23,7 @@ TZ_IS_UTC = time.tzname == ("UTC", "UTC")
 class TestTimestampConversion(TestCase):
     def test_conversion(self):
         stamp = convert_tstamp(1365567407)
-        self.assertEqual(stamp, datetime(2013, 4, 10, 4, 16, 47, tzinfo=timezone.utc))
+        self.assertEqual(stamp, datetime(2013, 4, 10, 4, 16, 47, tzinfo=timezone.get_fixed_timezone(0)))
 
     # NOTE: These next two tests will fail if your system clock is not in UTC
     # Travis CI is, and coverage is good, so...
