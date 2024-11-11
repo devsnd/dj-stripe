@@ -707,6 +707,7 @@ class RefundStatus(Enum):
     succeeded = _("Succeeded")
     failed = _("Failed")
     canceled = _("Canceled")
+    requires_action = _("Requires action")
 
 
 class SessionBillingAddressCollection(Enum):
