@@ -271,7 +271,13 @@ class Transfer(StripeModel):
 
         # Transfer Reversals exist as a list on the Transfer Object
         for reversals_data in data.get("reversals").auto_paging_iter():
-            TransferReversal.sync_from_stripe_data(reversals_data, api_key=api_key)
+            reversal_data = Transfer.stripe_class.retrieve_reversal(
+                id=self.id,
+                nested_id=reversals_data['id'],
+                api_key=api_key,
+                expand=TransferReversal.expand_fields
+            )
+            TransferReversal.sync_from_stripe_data(reversal_data, api_key=api_key)
 
     def get_stripe_dashboard_url(self) -> str:
         return (

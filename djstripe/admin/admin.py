@@ -181,7 +181,7 @@ class BalanceTransactionAdmin(ReadOnlyMixin, StripeModelAdmin):
         "available_on",
         "status",
     )
-    list_filter = ("status", "type")
+    list_filter = ("status", "type", "djstripe_owner_account")
 
 
 @admin.register(models.Charge)
