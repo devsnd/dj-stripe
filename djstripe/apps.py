@@ -4,7 +4,7 @@ dj-stripe - Django + Stripe Made Easy
 import pkg_resources
 from django.apps import AppConfig
 
-__version__ = pkg_resources.get_distribution("dj-stripe").version
+__version__ = pkg_resources.get_distribution("djstripe").version
 
 
 class DjstripeAppConfig(AppConfig):
@@ -24,7 +24,7 @@ class DjstripeAppConfig(AppConfig):
         # Set app info
         # https://stripe.com/docs/building-plugins#setappinfo
         stripe.set_app_info(
-            "dj-stripe",
+            "djstripe",
             version=__version__,
             url="https://github.com/dj-stripe/dj-stripe",
         )
