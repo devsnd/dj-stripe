@@ -275,7 +275,8 @@ class Transfer(StripeModel):
                 id=self.id,
                 nested_id=reversals_data['id'],
                 api_key=api_key,
-                expand=TransferReversal.expand_fields
+                expand=TransferReversal.expand_fields,
+                **(dict(stripe_account=self.djstripe_owner_account.id) if self.djstripe_owner_account else {})
             )
             TransferReversal.sync_from_stripe_data(reversal_data, api_key=api_key)
 
