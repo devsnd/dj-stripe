@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "djstripe"
-version = "2.7.18-financial-accounts"
+version = "2.7.18-financialaccounts"
 description = "Django + Stripe made easy"
 license = "MIT"
 authors = [
