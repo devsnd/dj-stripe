@@ -2,7 +2,7 @@
 Module for creating re-usable fixtures to be used across the test suite
 """
 import pytest
-import stripe
+import stripe_sub5
 from django.contrib.auth import get_user_model
 
 from . import FAKE_CUSTOMER, FAKE_PLATFORM_ACCOUNT

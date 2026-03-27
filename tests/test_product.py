@@ -5,7 +5,7 @@ dj-stripe Product model tests
 from copy import deepcopy
 
 import pytest
-import stripe
+import stripe_sub5
 
 from djstripe.models import Product
 from djstripe.models.core import Price

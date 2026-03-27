@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test.testcases import TestCase
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from djstripe.models import Customer
 from djstripe.sync import sync_subscriber

@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from django import forms
 from django.contrib.admin import helpers
 from django.urls import reverse
-from stripe.error import AuthenticationError, InvalidRequestError
+from stripe_sub5.error import AuthenticationError, InvalidRequestError
 
 from djstripe import enums, models, utils
 from djstripe.signals import ENABLED_EVENTS

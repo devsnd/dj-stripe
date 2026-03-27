@@ -38,9 +38,9 @@ from ...settings import djstripe_settings
 
 
 class Command(BaseCommand):
-    """Sync models from stripe."""
+    """Sync models from stripe_sub5."""
 
-    help = "Sync models from stripe."
+    help = "Sync models from stripe_sub5."
 
     def add_arguments(self, parser):
         parser.add_argument(

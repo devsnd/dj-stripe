@@ -9,7 +9,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.test.utils import override_settings
-from stripe.error import InvalidRequestError, RateLimitError
+from stripe_sub5.error import InvalidRequestError, RateLimitError
 
 from djstripe.enums import SubscriptionStatus
 from djstripe.models import (

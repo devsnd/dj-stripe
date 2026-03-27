@@ -3,7 +3,7 @@ dj-stripe - Views related to the djstripe app.
 """
 import logging
 
-import stripe
+import stripe_sub5
 from django.contrib import messages
 from django.contrib.admin import helpers, site
 from django.core.management import call_command

@@ -6,7 +6,7 @@ from typing import Any, Dict
 from django.contrib import admin
 from django.db import IntegrityError, transaction
 from django.shortcuts import render
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from djstripe import models
 

@@ -5,7 +5,7 @@ from copy import deepcopy
 from unittest.mock import patch
 
 import pytest
-import stripe
+import stripe_sub5
 from django.test import TestCase
 
 from djstripe.enums import OrderStatus

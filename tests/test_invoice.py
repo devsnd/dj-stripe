@@ -6,10 +6,10 @@ from decimal import Decimal
 from unittest.mock import ANY, patch
 
 import pytest
-import stripe
+import stripe_sub5
 from django.contrib.auth import get_user_model
 from django.test.testcases import TestCase
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from djstripe.enums import InvoiceStatus
 from djstripe.models import Invoice, Plan, Subscription, UpcomingInvoice

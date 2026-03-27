@@ -7,7 +7,7 @@ import warnings
 from traceback import format_exc
 from uuid import uuid4
 
-import stripe
+import stripe_sub5
 from django.db import models
 from django.utils.datastructures import CaseInsensitiveMapping
 from django.utils.functional import cached_property

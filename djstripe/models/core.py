@@ -2,14 +2,14 @@ import warnings
 from decimal import Decimal
 from typing import Optional, Union
 
-import stripe
+import stripe_sub5
 from django.apps import apps
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from .. import enums, webhooks
 from ..exceptions import MultipleSubscriptionException

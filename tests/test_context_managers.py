@@ -1,7 +1,7 @@
 """
 dj-stripe Context Manager Tests.
 """
-import stripe
+import stripe_sub5
 from django.test import TestCase
 
 from djstripe.context_managers import stripe_temporary_api_version

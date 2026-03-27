@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from stripe.error import StripeError
+from stripe_sub5.error import StripeError
 
 from djstripe import webhooks
 from djstripe.models import Event, Transfer

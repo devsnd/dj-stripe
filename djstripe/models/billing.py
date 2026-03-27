@@ -1,12 +1,12 @@
 import warnings
 from typing import Optional, Union
 
-import stripe
+import stripe_sub5
 from django.db import models
 from django.utils import timezone
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from .. import enums
 from ..fields import (

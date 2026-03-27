@@ -1,8 +1,8 @@
 from typing import Optional, Union
 
-import stripe
+import stripe_sub5
 from django.db import models, transaction
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from .. import enums
 from ..exceptions import ImpossibleAPIRequest, StripeObjectManipulationException

@@ -4,7 +4,7 @@ Utility functions related to the djstripe app.
 import datetime
 from typing import Optional
 
-import stripe
+import stripe_sub5
 from django.apps import apps
 from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import intcomma

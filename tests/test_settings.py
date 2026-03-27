@@ -3,7 +3,7 @@ dj-stripe Settings Tests.
 """
 from unittest.mock import patch
 
-import stripe
+import stripe_sub5
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.base import ModelBase
 from django.test import TestCase

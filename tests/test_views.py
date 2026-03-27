@@ -4,7 +4,7 @@ dj-stripe Views Tests.
 from copy import deepcopy
 
 import pytest
-import stripe
+import stripe_sub5
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.admin import helpers, site

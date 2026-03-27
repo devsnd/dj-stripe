@@ -360,7 +360,7 @@ def retry_for_rate_limit(func):
     wait_time = djstripe_settings.WEBHOOK_RATE_LIMIT_RETRY_WAIT_TIME
     exp_backoff = True
 
-    from stripe.error import RateLimitError
+    from stripe_sub5.error import RateLimitError
 
     for attempt in range(1, max_attempt_count + 1):
         try:

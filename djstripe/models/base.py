@@ -6,9 +6,9 @@ from typing import Dict, List, Optional, Type
 from django.apps import apps
 from django.db import IntegrityError, models, transaction
 from django.utils import dateformat, timezone
-from stripe.api_resources.abstract.api_resource import APIResource
-from stripe.error import InvalidRequestError
-from stripe.util import convert_to_stripe_object
+from stripe_sub5.api_resources.abstract.api_resource import APIResource
+from stripe_sub5.error import InvalidRequestError
+from stripe_sub5.util import convert_to_stripe_object
 
 from ..exceptions import ImpossibleAPIRequest
 from ..fields import (
@@ -930,7 +930,7 @@ class StripeModel(StripeBaseModel):
                 if line.get("type") == "subscription":
                     # Lines for subscriptions need to be keyed based on invoice and
                     # subscription, because their id is *just* the subscription
-                    # when received from Stripe. This means that future updates to
+                    # when received from stripe_sub5. This means that future updates to
                     # a subscription will change previously saved invoices - Doing
                     # the composite key avoids this.
                     if not line["id"].startswith(invoice.id):

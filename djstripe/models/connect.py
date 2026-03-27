@@ -1,4 +1,4 @@
-import stripe
+import stripe_sub5
 from django.db import models
 
 from djstripe.utils import get_friendly_currency_amount

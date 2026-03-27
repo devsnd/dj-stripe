@@ -22,7 +22,7 @@ from djstripe.webhooks import TEST_EVENT_ID
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.settings")
 logger = logging.getLogger(__name__)
-from stripe.util import convert_to_stripe_object
+from stripe_sub5.util import convert_to_stripe_object
 
 FUTURE_DATE = datetime(2100, 4, 30, tzinfo=timezone.get_fixed_timezone(0))
 

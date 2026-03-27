@@ -1,4 +1,4 @@
-import stripe
+import stripe_sub5
 from django.db import models, transaction
 
 from .. import enums

@@ -5,7 +5,7 @@ from typing import Dict, List, Set, Type
 import stripe.api_resources
 import stripe.stripe_object
 from django.core.management import BaseCommand
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 import djstripe.models
 import tests

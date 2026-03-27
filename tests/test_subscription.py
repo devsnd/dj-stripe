@@ -7,11 +7,11 @@ from decimal import Decimal
 from unittest.mock import PropertyMock, patch
 
 import pytest
-import stripe
+import stripe_sub5
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
-from stripe.error import InvalidRequestError
+from stripe_sub5.error import InvalidRequestError
 
 from djstripe.enums import SubscriptionStatus
 from djstripe.models import Plan, Product, Subscription

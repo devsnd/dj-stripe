@@ -1,7 +1,7 @@
 """
 dj-stripe settings
 """
-import stripe
+import stripe_sub5
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured

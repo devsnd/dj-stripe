@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import Sequence
 
 import pytest
-import stripe
+import stripe_sub5
 from django.apps import apps
 from django.contrib.admin import helpers, site
 from django.contrib.auth import get_user_model
