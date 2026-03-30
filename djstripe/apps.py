@@ -17,7 +17,7 @@ class DjstripeAppConfig(AppConfig):
     default_auto_field = "django.db.models.AutoField"
 
     def ready(self):
-        import stripe
+        import stripe_sub5 as stripe
 
         from . import checks, event_handlers
 
