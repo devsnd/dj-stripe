@@ -5,7 +5,7 @@ from copy import deepcopy
 from unittest.mock import ANY, patch
 
 import pytest
-import stripe_sub5
+import stripe_sub5 as stripe
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from stripe_sub5.error import InvalidRequestError

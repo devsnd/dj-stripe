@@ -7,7 +7,7 @@ from decimal import Decimal
 from unittest.mock import PropertyMock, patch
 
 import pytest
-import stripe_sub5
+import stripe_sub5 as stripe
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone

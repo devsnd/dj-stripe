@@ -1,7 +1,7 @@
 import json
 import logging
 
-import stripe_sub5
+import stripe_sub5 as stripe
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse

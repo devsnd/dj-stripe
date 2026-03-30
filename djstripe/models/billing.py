@@ -1,7 +1,7 @@
 import warnings
 from typing import Optional, Union
 
-import stripe_sub5
+import stripe_sub5 as stripe
 from django.db import models
 from django.utils import timezone
 from django.utils.text import format_lazy

@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-import stripe_sub5
+import stripe_sub5 as stripe
 from django.db import models, transaction
 from stripe_sub5.error import InvalidRequestError
 

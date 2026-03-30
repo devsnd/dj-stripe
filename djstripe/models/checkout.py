@@ -1,4 +1,4 @@
-import stripe_sub5
+import stripe_sub5 as stripe
 from django.db import models
 
 from djstripe.settings import djstripe_settings
