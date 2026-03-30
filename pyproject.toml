@@ -105,6 +105,7 @@ mypy = ">=0.971"
 # waste our time like this, and it's largely been displaced by the other tools:
 # mypy, isort, and black. So let's stick to those instead.
 
+
 [tool.poetry.group.docs]
 optional = true
 [tool.poetry.group.docs.dependencies]
