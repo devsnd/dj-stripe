@@ -184,6 +184,25 @@ class BalanceTransactionAdmin(ReadOnlyMixin, StripeModelAdmin):
     list_filter = ("status", "type", "djstripe_owner_account")
 
 
+@admin.register(models.CustomerCashBalanceTransaction)
+class CustomerCashBalanceTransactionAdmin(ReadOnlyMixin, StripeModelAdmin):
+    list_display = (
+        "id",
+        "customer",
+        "type",
+        "net_amount",
+        "ending_balance",
+        "currency",
+        "created",
+        "livemode",
+    )
+    list_filter = ("type", "currency", "livemode", "djstripe_owner_account")
+    search_fields = ("id", "customer__id")
+    raw_id_fields = get_forward_relation_fields_for_model(
+        models.CustomerCashBalanceTransaction
+    )
+
+
 @admin.register(models.Charge)
 class ChargeAdmin(StripeModelAdmin):
     list_display = (

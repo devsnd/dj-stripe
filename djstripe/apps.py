@@ -1,10 +1,18 @@
 """
 dj-stripe - Django + Stripe Made Easy
 """
-import pkg_resources
+import os
+
 from django.apps import AppConfig
 
-__version__ = pkg_resources.get_distribution("djstripe").version
+pyproject_toml_location = os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")
+with open(pyproject_toml_location) as f:
+    for line in f:
+        if line.startswith("version"):
+            __version__ = line.split("=")[1].strip().strip('"')
+            break
+    else:
+        raise RuntimeError(f"Could not find version in {pyproject_toml_location}")
 
 
 class DjstripeAppConfig(AppConfig):

@@ -1,3 +1,4 @@
+import requests
 import warnings
 from decimal import Decimal
 from typing import Optional, Union
@@ -118,6 +119,303 @@ class BalanceTransaction(StripeModel):
             return self.get_source_instance().get_stripe_dashboard_url()
         except LookupError:
             return
+
+
+class CustomerCashBalanceTransaction(StripeModel):
+    """
+    Customers with certain payments enabled have a cash balance,
+    representing funds that were paid by the customer to a merchant,
+    but have not yet been allocated to a payment.
+    Cash Balance Transactions represent when funds are moved into
+    or out of this balance.
+
+    Stripe documentation: https://stripe.com/docs/api/cash_balance_transactions
+    """
+
+    adjusted_for_overdraft_balance_transaction = StripeForeignKey(
+        "BalanceTransaction",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cash_balance_transactions_overdraft",
+        help_text="The BalanceTransaction that corresponds to funds taken out of your Stripe balance, "
+        "if `type=adjusted_for_overdraft`.",
+    )
+    adjusted_for_overdraft_linked_transaction = StripeForeignKey(
+        "CustomerCashBalanceTransaction",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="overdraft_adjustments",
+        help_text="The Cash Balance Transaction that brought the customer balance negative, "
+        "triggering the clawback of funds, if `type=adjusted_for_overdraft`.",
+    )
+    applied_to_payment_payment_intent = StripeForeignKey(
+        "PaymentIntent",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cash_balance_transactions",
+        help_text="The PaymentIntent that funds were applied to, if `type=applied_to_payment`.",
+    )
+    currency = StripeCurrencyCodeField(
+        help_text="Three-letter ISO currency code, in lowercase."
+    )
+    customer = StripeForeignKey(
+        "Customer",
+        on_delete=models.CASCADE,
+        related_name="cash_balance_transactions",
+        help_text="The customer whose available cash balance changed as a result of this transaction.",
+    )
+    ending_balance = StripeQuantumCurrencyAmountField(
+        help_text="The total available cash balance for the specified currency after this transaction was applied."
+    )
+    funded = JSONField(
+        null=True,
+        blank=True,
+        help_text="If this is a `type=funded` transaction, contains information about the funding.",
+    )
+    net_amount = StripeQuantumCurrencyAmountField(
+        help_text="The amount by which the cash balance changed, represented in the smallest currency unit."
+    )
+    refunded_from_payment_refund = StripeForeignKey(
+        "Refund",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cash_balance_transactions",
+        help_text="The Refund that moved these funds into the customer's cash balance, "
+        "if `type=refunded_from_payment`.",
+    )
+    type = StripeEnumField(
+        enum=enums.CustomerCashBalanceTransactionType,
+        help_text="The type of the cash balance transaction.",
+    )
+    transferred_to_balance_balance_transaction = StripeForeignKey(
+        "BalanceTransaction",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cash_balance_transactions",
+        help_text="The BalanceTransaction that corresponds to funds transferred to your Stripe balance, "
+        "if `type=transferred_to_balance`.",
+    )
+    unapplied_from_payment_payment_intent = StripeForeignKey(
+        "PaymentIntent",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="cash_balance_transactions_unapplied",
+        help_text="The PaymentIntent that funds were unapplied from, if `type=unapplied_from_payment`.",
+    )
+
+    def __str__(self):
+        return f"{get_friendly_currency_amount(self.net_amount / 100, self.currency)} ({self.type})"
+
+    @classmethod
+    def api_list(cls, customer, api_key=djstripe_settings.STRIPE_SECRET_KEY, **kwargs):
+        """
+        Call the Stripe API's list operation for cash balance transactions.
+
+        :param customer: The customer to list cash balance transactions for.
+        :type customer: Customer or string (customer ID)
+        :param api_key: The api key to use for this request.
+            Defaults to djstripe_settings.STRIPE_SECRET_KEY.
+        :type api_key: string
+
+        :returns: an iterator over all items in the query
+        """
+        customer_id = customer.id if hasattr(customer, 'id') else customer
+        response = requests.get(
+            f'{stripe.api_base}/v1/customers/{customer_id}/cash_balance_transactions',
+            headers={'Accept': 'application/json'},
+            auth=(api_key, ''),
+            params=kwargs,
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def api_retrieve(self, api_key=None, **kwargs):
+        """
+        Call the Stripe API's retrieve operation for this cash balance transaction.
+
+        :param api_key: The api key to use for this request.
+            Defaults to djstripe_settings.STRIPE_SECRET_KEY.
+        :type api_key: string
+
+        :returns: the Stripe API response as a dict
+        """
+        api_key = api_key or djstripe_settings.STRIPE_SECRET_KEY
+        customer_id = self.customer.id if self.customer else self.customer_id
+        response = requests.get(
+            f'{stripe.api_base}/v1/customers/{customer_id}/cash_balance_transactions/{self.id}',
+            headers={'Accept': 'application/json'},
+            auth=(api_key, ''),
+            params=kwargs,
+        )
+        response.raise_for_status()
+        return response.json()
+
+    @classmethod
+    def sync_for_customer(cls, customer, api_key=djstripe_settings.STRIPE_SECRET_KEY, **kwargs):
+        """
+        Sync all cash balance transactions for a customer from Stripe.
+
+        :param customer: The customer to sync cash balance transactions for.
+        :type customer: Customer or string (customer ID)
+        :param api_key: The api key to use for this request.
+            Defaults to djstripe_settings.STRIPE_SECRET_KEY.
+        :type api_key: string
+
+        :returns: list of synced CustomerCashBalanceTransaction instances
+        """
+        response = cls.api_list(customer, api_key=api_key, **kwargs)
+        instances = []
+        for data in response.get("data", []):
+            instance = cls.sync_from_stripe_data(data, api_key=api_key)
+            instances.append(instance)
+        return instances
+
+    @classmethod
+    def sync_from_stripe_data(cls, data, api_key=djstripe_settings.STRIPE_SECRET_KEY):
+        """
+        Syncs this object from the stripe data provided.
+
+        :param data: stripe object
+        :type data: dict
+        :param api_key: The api key to use for this request.
+        :type api_key: string
+        :rtype: CustomerCashBalanceTransaction
+        """
+        from datetime import datetime
+
+        data_id = data.get("id")
+
+        # Extract nested FK references
+        applied_to_payment_pi_id = None
+        if data.get("applied_to_payment"):
+            applied_to_payment_pi_id = data["applied_to_payment"].get("payment_intent")
+
+        unapplied_from_payment_pi_id = None
+        if data.get("unapplied_from_payment"):
+            unapplied_from_payment_pi_id = data["unapplied_from_payment"].get("payment_intent")
+
+        refunded_from_payment_refund_id = None
+        if data.get("refunded_from_payment"):
+            refunded_from_payment_refund_id = data["refunded_from_payment"].get("refund")
+
+        transferred_to_balance_bt_id = None
+        if data.get("transferred_to_balance"):
+            transferred_to_balance_bt_id = data["transferred_to_balance"].get("balance_transaction")
+
+        adjusted_for_overdraft_bt_id = None
+        adjusted_for_overdraft_lt_id = None
+        if data.get("adjusted_for_overdraft"):
+            adjusted_for_overdraft_bt_id = data["adjusted_for_overdraft"].get("balance_transaction")
+            adjusted_for_overdraft_lt_id = data["adjusted_for_overdraft"].get("linked_transaction")
+
+        # Get or create the customer
+        customer_id = data.get("customer")
+        customer = None
+        if customer_id:
+            try:
+                customer = Customer.objects.get(id=customer_id)
+            except Customer.DoesNotExist:
+                # Try to sync customer from Stripe
+                customer = Customer.sync_from_stripe_data(
+                    Customer.stripe_class.retrieve(customer_id, api_key=api_key),
+                    api_key=api_key,
+                )
+
+        # Convert created timestamp to datetime
+        created_timestamp = data.get("created")
+        created = datetime.fromtimestamp(created_timestamp, tz=timezone.utc) if created_timestamp else None
+
+        # Build the defaults dict
+        defaults = {
+            "currency": data.get("currency", ""),
+            "customer": customer,
+            "ending_balance": data.get("ending_balance", 0),
+            "funded": data.get("funded"),
+            "net_amount": data.get("net_amount", 0),
+            "type": data.get("type", ""),
+            "livemode": data.get("livemode"),
+            "created": created,
+        }
+
+        # Handle FK references - only set if they exist in the database
+        if applied_to_payment_pi_id:
+            try:
+                defaults["applied_to_payment_payment_intent"] = PaymentIntent.objects.get(
+                    id=applied_to_payment_pi_id
+                )
+            except PaymentIntent.DoesNotExist:
+                logger.warning(
+                    f"PaymentIntent {applied_to_payment_pi_id} not found for "
+                    f"CustomerCashBalanceTransaction {data_id}"
+                )
+
+        if unapplied_from_payment_pi_id:
+            try:
+                defaults["unapplied_from_payment_payment_intent"] = PaymentIntent.objects.get(
+                    id=unapplied_from_payment_pi_id
+                )
+            except PaymentIntent.DoesNotExist:
+                logger.warning(
+                    f"PaymentIntent {unapplied_from_payment_pi_id} not found for "
+                    f"CustomerCashBalanceTransaction {data_id}"
+                )
+
+        if refunded_from_payment_refund_id:
+            try:
+                defaults["refunded_from_payment_refund"] = Refund.objects.get(
+                    id=refunded_from_payment_refund_id
+                )
+            except Refund.DoesNotExist:
+                logger.warning(
+                    f"Refund {refunded_from_payment_refund_id} not found for "
+                    f"CustomerCashBalanceTransaction {data_id}"
+                )
+
+        if transferred_to_balance_bt_id:
+            try:
+                defaults["transferred_to_balance_balance_transaction"] = BalanceTransaction.objects.get(
+                    id=transferred_to_balance_bt_id
+                )
+            except BalanceTransaction.DoesNotExist:
+                logger.warning(
+                    f"BalanceTransaction {transferred_to_balance_bt_id} not found for "
+                    f"CustomerCashBalanceTransaction {data_id}"
+                )
+
+        if adjusted_for_overdraft_bt_id:
+            try:
+                defaults["adjusted_for_overdraft_balance_transaction"] = BalanceTransaction.objects.get(
+                    id=adjusted_for_overdraft_bt_id
+                )
+            except BalanceTransaction.DoesNotExist:
+                logger.warning(
+                    f"BalanceTransaction {adjusted_for_overdraft_bt_id} not found for "
+                    f"CustomerCashBalanceTransaction {data_id}"
+                )
+
+        if adjusted_for_overdraft_lt_id:
+            try:
+                defaults["adjusted_for_overdraft_linked_transaction"] = cls.objects.get(
+                    id=adjusted_for_overdraft_lt_id
+                )
+            except cls.DoesNotExist:
+                logger.warning(
+                    f"CustomerCashBalanceTransaction {adjusted_for_overdraft_lt_id} not found for "
+                    f"CustomerCashBalanceTransaction {data_id} (linked_transaction)"
+                )
+
+        instance, created = cls.objects.update_or_create(
+            id=data_id,
+            defaults=defaults,
+        )
+
+        return instance
 
 
 class Charge(StripeModel):

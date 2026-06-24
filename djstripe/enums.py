@@ -211,6 +211,18 @@ class BalanceTransactionStatus(Enum):
     pending = _("Pending")
 
 
+class CustomerCashBalanceTransactionType(Enum):
+    adjusted_for_overdraft = _("Adjusted for Overdraft")
+    applied_to_payment = _("Applied to Payment")
+    funded = _("Funded")
+    funding_reversed = _("Funding Reversed")
+    refunded_from_payment = _("Refunded from Payment")
+    return_canceled = _("Return Canceled")
+    return_initiated = _("Return Initiated")
+    transferred_to_balance = _("Transferred to Balance")
+    unapplied_from_payment = _("Unapplied from Payment")
+
+
 class BalanceTransactionType(Enum):
     # https://stripe.com/docs/reports/balance-transaction-types
     adjustment = _("Adjustment")
