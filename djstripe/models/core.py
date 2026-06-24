@@ -329,7 +329,7 @@ class CustomerCashBalanceTransaction(StripeModel):
 
         # Convert created timestamp to datetime
         created_timestamp = data.get("created")
-        created = datetime.fromtimestamp(created_timestamp, tz=timezone.utc) if created_timestamp else None
+        created = datetime.fromtimestamp(created_timestamp, tz=timezone.get_fixed_timezone(0)) if created_timestamp else None
 
         # Build the defaults dict
         defaults = {
