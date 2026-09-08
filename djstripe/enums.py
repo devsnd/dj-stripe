@@ -193,6 +193,8 @@ class BalanceTransactionReportingCategory(Enum):
     other_adjustment = _("Other adjustment")
     partial_capture_reversal = _("Partial capture reversal")
     payout = _("Payout")
+    payout_minimum_balance_hold = _("Payout minimum balance hold")
+    payout_minimum_balance_release = _("Payout minimum balance release")
     payout_reversal = _("Payout reversal")
     platform_earning = _("Stripe Connect platform earning")
     platform_earning_refund = _("Stripe Connect platform earning refund")
